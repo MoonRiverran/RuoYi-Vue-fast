@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.mapper.EmpPerfMapper">
+
+    <resultMap type="EmpPerf" id="EmpPerfResult">
+        <result property="empId"    column="emp_id"    />
+        <result property="employeeName"    column="employee_name"    />
+        <result property="employeeNumber"    column="employee_number"    />
+        <result property="empDeptid"    column="emp_deptid"    />
+        <result property="workType"    column="work_type"    />
+        <result property="projectType"    column="project_type"    />
+        <result property="projectDescription"    column="project_description"    />
+        <result property="goal"    column="goal"    />
+        <result property="completionRatio"    column="completion_ratio"    />
+        <result property="completionResult"    column="completion_result"    />
+        <result property="completionDate"    column="completion_date"    />
+        <result property="workDuration"    column="work_duration"    />
+        <result property="extensionField1"    column="extension_field1"    />
+        <result property="extensionField2"    column="extension_field2"    />
+        <result property="extensionField3"    column="extension_field3"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectEmpPerfVo">
+        select emp_id, employee_name, employee_number, emp_deptid, work_type, project_type, project_description, goal, completion_ratio, completion_result, completion_date, work_duration, extension_field1, extension_field2, extension_field3, create_by, create_time, update_by, update_time, remark from emp_perf
+    </sql>
+
+    <select id="selectEmpPerfList" parameterType="EmpPerf" resultMap="EmpPerfResult">
+        select e.emp_id, e.employee_name, e.employee_number, e.emp_deptid, e.work_type, e.project_type, e.project_description, e.goal, e.completion_ratio, e.completion_result, e.completion_date, e.work_duration, e.extension_field1, e.extension_field2, e.extension_field3, e.create_by, e.create_time, e.update_by, e.update_time, e.remark
+        from emp_perf e left join sys_dept d on e.emp_deptid = d.dept_id
+        <where>
+            <if test="employeeName != null  and employeeName != ''"> and e.employee_name like concat('%', #{employeeName}, '%')</if>
+            <if test="employeeNumber != null  and employeeNumber != ''"> and e.employee_Number = #{employeeNumber}</if>
+            <if test="empDeptid != null and empDeptid != 0">
+                AND (e.emp_deptid = #{empDeptid} OR e.emp_deptid IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{empDeptid}, ancestors) ))
+            </if>
+            <if test="workType != null  and workType != ''"> and e.work_type = #{workType}</if>
+            <if test="projectType != null  and projectType != ''"> and e.project_type = #{projectType}</if>
+            <if test="completionResult != null  and completionResult != ''"> and e.completion_result = #{completionResult}</if>
+            <if test="completionDate != null "> and e.completion_date = #{completionDate}</if>
+        </where>
+            ORDER BY work_duration asc
+    </select>
+
+    <select id="selectEmpPerfByEmpId" parameterType="Long" resultMap="EmpPerfResult">
+        <include refid="selectEmpPerfVo"/>
+        where emp_id = #{empId}
+    </select>
+
+    <insert id="insertEmpPerf" parameterType="EmpPerf" useGeneratedKeys="true" keyProperty="empId">
+        insert into emp_perf
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="employeeName != null">employee_name,</if>
+            <if test="employeeNumber != null">employee_number,</if>
+            <if test="empDeptid != null">emp_deptid,</if>
+            <if test="workType != null and workType != ''">work_type,</if>
+            <if test="projectType != null and projectType != ''">project_type,</if>
+            <if test="projectDescription != null">project_description,</if>
+            <if test="goal != null">goal,</if>
+            <if test="completionRatio != null">completion_ratio,</if>
+            <if test="completionResult != null">completion_result,</if>
+            <if test="completionDate != null">completion_date,</if>
+            <if test="workDuration != null and workDuration != ''">work_duration,</if>
+            <if test="extensionField1 != null">extension_field1,</if>
+            <if test="extensionField2 != null">extension_field2,</if>
+            <if test="extensionField3 != null">extension_field3,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="employeeName != null">#{employeeName},</if>
+            <if test="employeeNumber != null">#{employeeNumber},</if>
+            <if test="empDeptid != null">#{empDeptid},</if>
+            <if test="workType != null and workType != ''">#{workType},</if>
+            <if test="projectType != null and projectType != ''">#{projectType},</if>
+            <if test="projectDescription != null">#{projectDescription},</if>
+            <if test="goal != null">#{goal},</if>
+            <if test="completionRatio != null">#{completionRatio},</if>
+            <if test="completionResult != null">#{completionResult},</if>
+            <if test="completionDate != null">#{completionDate},</if>
+            <if test="workDuration != null and workDuration != ''">#{workDuration},</if>
+            <if test="extensionField1 != null">#{extensionField1},</if>
+            <if test="extensionField2 != null">#{extensionField2},</if>
+            <if test="extensionField3 != null">#{extensionField3},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateEmpPerf" parameterType="EmpPerf">
+        update emp_perf
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="employeeName != null">employee_name = #{employeeName},</if>
+            <if test="employeeNumber != null">employee_number = #{employeeNumber},</if>
+            <if test="empDeptid != null">emp_deptid = #{empDeptid},</if>
+            <if test="workType != null and workType != ''">work_type = #{workType},</if>
+            <if test="projectType != null and projectType != ''">project_type = #{projectType},</if>
+            <if test="projectDescription != null">project_description = #{projectDescription},</if>
+            <if test="goal != null">goal = #{goal},</if>
+            <if test="completionRatio != null">completion_ratio = #{completionRatio},</if>
+            <if test="completionResult != null">completion_result = #{completionResult},</if>
+            <if test="completionDate != null">completion_date = #{completionDate},</if>
+            <if test="workDuration != null and workDuration != ''">work_duration = #{workDuration},</if>
+            <if test="extensionField1 != null">extension_field1 = #{extensionField1},</if>
+            <if test="extensionField2 != null">extension_field2 = #{extensionField2},</if>
+            <if test="extensionField3 != null">extension_field3 = #{extensionField3},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where emp_id = #{empId}
+    </update>
+
+    <delete id="deleteEmpPerfByEmpId" parameterType="Long">
+        delete from emp_perf where emp_id = #{empId}
+    </delete>
+
+    <delete id="deleteEmpPerfByEmpIds" parameterType="String">
+        delete from emp_perf where emp_id in
+        <foreach item="empId" collection="array" open="(" separator="," close=")">
+            #{empId}
+        </foreach>
+    </delete>
+</mapper>

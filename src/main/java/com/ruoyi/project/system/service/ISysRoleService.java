@@ -170,4 +170,12 @@ public interface ISysRoleService
      * @return 结果
      */
     public int insertAuthUsers(Long roleId, Long[] userIds);
+
+    /**
+     * 根据用户ID用户角色
+     *
+     * @param userID 用户ID
+     * @return 结果
+     */
+    SysRole selectRoleByUserId(Long userID);
 }
