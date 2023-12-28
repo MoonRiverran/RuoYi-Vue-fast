@@ -58,4 +58,12 @@ public interface EmpPerfMapper
      * @return 结果
      */
     public int deleteEmpPerfByEmpIds(Long[] empIds);
+
+    /**
+     *  获取该部门所有员工的月工作时间
+     *
+     * @param deptID 员工绩效主键
+     * @return 结果
+     */
+    public List<EmpPerf> getMonthWorkHour(String deptID);
 }

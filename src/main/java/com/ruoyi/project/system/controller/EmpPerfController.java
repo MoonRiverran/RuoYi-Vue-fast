@@ -47,6 +47,18 @@ public class EmpPerfController extends BaseController
     }
 
     /**
+     * 查询员工绩效列表
+     */
+    @PreAuthorize("@ss.hasPermi('system:perf:list')")
+    @GetMapping("/charts")
+    public TableDataInfo getMonthWorkHour(String deptID)
+    {
+        startPage();
+        List<EmpPerf> list = empPerfService.getMonthWorkHour(deptID);
+        return getDataTable(list);
+    }
+
+    /**
      * 导出员工绩效列表
      */
     @PreAuthorize("@ss.hasPermi('system:perf:export')")

@@ -1,11 +1,12 @@
 package com.ruoyi.project.system.domain;
 
-import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.framework.aspectj.lang.annotation.Excel;
 import com.ruoyi.framework.web.domain.BaseEntity;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+import java.util.Date;
 
 /**
  * 员工绩效对象 emp_perf
@@ -35,6 +36,7 @@ public class EmpPerf extends BaseEntity
     /** 工作类型（数据字典） */
     @Excel(name = "工作类型", readConverterExp = "数=据字典")
     private String workType;
+    private String workTypeName;
 
     /** 项目类型（数据字典） */
     @Excel(name = "项目类型", readConverterExp = "数=据字典")
@@ -76,6 +78,9 @@ public class EmpPerf extends BaseEntity
     /** 扩展字段3 */
     @Excel(name = "扩展字段3")
     private String extensionField3;
+
+    public EmpPerf() {
+    }
 
     public void setEmpId(Long empId)
     {
@@ -122,6 +127,15 @@ public class EmpPerf extends BaseEntity
     {
         return workType;
     }
+
+    public String getWorkTypeName() {
+        return workTypeName;
+    }
+
+    public void setWorkTypeName(String workTypeName) {
+        this.workTypeName = workTypeName;
+    }
+
     public void setProjectType(String projectType)
     {
         this.projectType = projectType;
@@ -221,6 +235,7 @@ public class EmpPerf extends BaseEntity
                 .append("employeeNumber", getEmployeeNumber())
                 .append("empDeptid", getEmpDeptid())
                 .append("workType", getWorkType())
+                .append("workTypeName", getWorkTypeName())
                 .append("projectType", getProjectType())
                 .append("projectDescription", getProjectDescription())
                 .append("goal", getGoal())

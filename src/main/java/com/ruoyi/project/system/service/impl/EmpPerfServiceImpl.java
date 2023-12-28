@@ -129,4 +129,13 @@ public class EmpPerfServiceImpl implements IEmpPerfService
     {
         return empPerfMapper.deleteEmpPerfByEmpId(empId);
     }
+
+    /**
+     *  获取该部门所有员工的月工作时间
+     *
+     * @param deptID 员工绩效主键
+     * @return 结果
+     */
+    @Override
+    public List<EmpPerf> getMonthWorkHour(String deptID) { return empPerfMapper.getMonthWorkHour(deptID); }
 }

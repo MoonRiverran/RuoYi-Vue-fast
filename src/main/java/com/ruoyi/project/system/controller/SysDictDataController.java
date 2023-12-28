@@ -3,6 +3,8 @@ package com.ruoyi.project.system.controller;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -67,6 +69,12 @@ public class SysDictDataController extends BaseController
     public AjaxResult getInfo(@PathVariable Long dictCode)
     {
         return success(dictDataService.selectDictDataById(dictCode));
+    }
+
+    @GetMapping("/dictLabel/{dictType}/{dictValue}")
+    public String selectDictLabel(@PathVariable String dictType, @PathVariable String dictValue)
+    {
+        return dictDataService.selectDictLabel(dictType,dictValue);
     }
 
     /**

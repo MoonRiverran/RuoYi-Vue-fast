@@ -10,6 +10,7 @@
         <result property="employeeNumber"    column="employee_number"    />
         <result property="empDeptid"    column="emp_deptid"    />
         <result property="workType"    column="work_type"    />
+        <result property="workTypeName"    column="work_typeName"    />
         <result property="projectType"    column="project_type"    />
         <result property="projectDescription"    column="project_description"    />
         <result property="goal"    column="goal"    />
@@ -51,6 +52,21 @@
     <select id="selectEmpPerfByEmpId" parameterType="Long" resultMap="EmpPerfResult">
         <include refid="selectEmpPerfVo"/>
         where emp_id = #{empId}
+    </select>
+
+    <select id="getMonthWorkHour" parameterType="String" resultMap="EmpPerfResult">
+        SELECT
+            e.employee_number,
+            e.employee_name,
+            e.work_type,
+            (SELECT dict_label FROM sys_dict_data WHERE dict_value = work_type) as work_typeName,
+            SUM(e.work_duration) AS work_duration
+        FROM
+            emp_perf e
+        WHERE
+            MONTH(e.completion_date) = MONTH(CURDATE()) AND YEAR(e.completion_date) = YEAR(CURDATE())
+        GROUP BY
+            e.employee_number, e.employee_name, e.work_type
     </select>
 
     <insert id="insertEmpPerf" parameterType="EmpPerf" useGeneratedKeys="true" keyProperty="empId">
