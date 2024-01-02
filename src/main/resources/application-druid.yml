@@ -6,7 +6,7 @@ spring:
         druid:
             # 主库数据源
             master:
-                url: jdbc:mysql://localhost:3306/ryfast?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+                url: jdbc:mysql://localhost:3306/crchi_perf_manager?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
                 username: root
                 password: DdJd1Ox0AMNDicW98hu+11+SDdnVHxmmN3N54JvkBoE6/He5MmkGm8IdNhBGuY5zQvSg22Vwz/Ac+NgVoMpPjQ==
             # 从库数据源
@@ -39,6 +39,7 @@ spring:
             testWhileIdle: true
             testOnBorrow: false
             testOnReturn: false
+            connectProperties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKboO2syoUbJciuzGjErpMPh0DnoB7JeoSll5zldJHwJHyW9/kW4D0M3nh9YTBKEIo/GeB4MuS961aGWYqU0EhUCAwEAAQ==
             webStatFilter: 
                 enabled: true
             statViewServlet:
@@ -49,7 +50,6 @@ spring:
                 # 控制台管理用户名和密码
                 login-username: ruoyi
                 login-password: 123456
-            connectProperties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKboO2syoUbJciuzGjErpMPh0DnoB7JeoSll5zldJHwJHyW9/kW4D0M3nh9YTBKEIo/GeB4MuS961aGWYqU0EhUCAwEAAQ==
             filter:
                 config:
                     # 是否配置加密
