@@ -34,12 +34,12 @@ public class EmpPerf extends BaseEntity
     private Long empDeptid;
 
     /** 工作类型（数据字典） */
-    @Excel(name = "工作类型", readConverterExp = "数=据字典")
+    @Excel(name = "工作类型", dictType = "work_type")
     private String workType;
     private String workTypeName;
 
     /** 项目类型（数据字典） */
-    @Excel(name = "项目类型", readConverterExp = "数=据字典")
+    @Excel(name = "项目类型", dictType = "project_type")
     private String projectType;
 
     /** 项目说明 */
@@ -51,7 +51,7 @@ public class EmpPerf extends BaseEntity
     private String goal;
 
     /** 完成比例（0-100%） */
-    @Excel(name = "完成比例", readConverterExp = "0=-100%")
+    @Excel(name = "完成比例", suffix="%")
     private Integer completionRatio;
 
     /** 完成结果 */
@@ -64,7 +64,7 @@ public class EmpPerf extends BaseEntity
     private Date completionDate;
 
     /** 工作时长（h） */
-    @Excel(name = "工作时长", readConverterExp = "h=")
+    @Excel(name = "工作时长", suffix="h")
     private Integer  workDuration;
 
     /** 扩展字段1 */

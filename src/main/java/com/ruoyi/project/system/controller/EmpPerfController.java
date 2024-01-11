@@ -1,6 +1,9 @@
 package com.ruoyi.project.system.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,12 +54,43 @@ public class EmpPerfController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:perf:list')")
     @GetMapping("/charts")
-    public TableDataInfo getMonthWorkHour(String deptID)
-    {
+    public AjaxResult getMonthWorkHour(String deptID) {
         startPage();
+
         List<EmpPerf> list = empPerfService.getMonthWorkHour(deptID);
-        return getDataTable(list);
+        List<EmpPerf> nameIds = empPerfService.getEmpNameAndId(deptID);
+
+        Map<String, Map<String, Object>> employeeInfoMap = new HashMap<>();
+
+        for (EmpPerf empPerf : nameIds) {
+            Map<String, Object> employee = new HashMap<>();
+            employee.put("name", empPerf.getEmployeeName());
+            employee.put("id", empPerf.getEmployeeNumber());
+
+            List<Map<String, Object>> workerData = new ArrayList<>();
+            employee.put("workerData", workerData);
+
+            employeeInfoMap.put(empPerf.getEmployeeNumber(), employee);
+        }
+
+        for (EmpPerf empPerf : list) {
+            String id = empPerf.getEmployeeNumber();
+            Map<String, Object> employee = employeeInfoMap.get(id);
+            if (employee != null) {
+                List<Map<String, Object>> workerData = (List<Map<String, Object>>) employee.get("workerData");
+                Map<String, Object> project = new HashMap<>();
+                project.put("name", empPerf.getWorkTypeName());
+                project.put("value", empPerf.getWorkDuration());
+                workerData.add(project);
+            }
+        }
+
+        List<Map<String, Object>> employeeInfo = new ArrayList<>(employeeInfoMap.values());
+
+        return success(employeeInfo);
     }
+
+
 
     /**
      * 导出员工绩效列表

@@ -62,8 +62,16 @@ public interface IEmpPerfService
     /**
      *  获取该部门所有员工的月工作时间
      *
-     * @param deptID 员工绩效主键
+     * @param deptID 部门ID
      * @return 结果
      */
     public List<EmpPerf> getMonthWorkHour(String deptID);
+
+    /**
+     *  获取该部门所有员工的id和名称
+     *
+     * @param deptID 部门ID
+     * @return 结果
+     */
+    public List<EmpPerf> getEmpNameAndId(String deptID);
 }
