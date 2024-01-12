@@ -44,7 +44,7 @@
             <if test="workType != null  and workType != ''"> and e.work_type = #{workType}</if>
             <if test="projectType != null  and projectType != ''"> and e.project_type = #{projectType}</if>
             <if test="completionResult != null  and completionResult != ''"> and e.completion_result = #{completionResult}</if>
-            <if test="completionDate != null "> and e.completion_date = #{completionDate}</if>
+            <if test="searchDate != null "> and DATE_FORMAT(e.completion_date, '%Y-%m') = #{searchDate}</if>
         </where>
             ORDER BY work_duration desc
     </select>

@@ -62,6 +62,7 @@ public class EmpPerf extends BaseEntity
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Excel(name = "完成日期", width = 30, dateFormat = "yyyy-MM-dd")
     private Date completionDate;
+    private String searchDate;
 
     /** 工作时长（h） */
     @Excel(name = "工作时长", suffix="h")
@@ -226,7 +227,13 @@ public class EmpPerf extends BaseEntity
     {
         return extensionField3;
     }
+    public String getSearchDate() {
+        return searchDate;
+    }
 
+    public void setSearchDate(String searchDate) {
+        this.searchDate = searchDate;
+    }
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -251,6 +258,7 @@ public class EmpPerf extends BaseEntity
                 .append("updateBy", getUpdateBy())
                 .append("updateTime", getUpdateTime())
                 .append("remark", getRemark())
+                .append("searchDate", getSearchDate())
                 .toString();
     }
 }
