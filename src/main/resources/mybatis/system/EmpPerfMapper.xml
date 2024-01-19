@@ -44,19 +44,21 @@
             <if test="workType != null  and workType != ''"> and e.work_type = #{workType}</if>
             <if test="projectType != null  and projectType != ''"> and e.project_type = #{projectType}</if>
             <if test="completionResult != null  and completionResult != ''"> and e.completion_result = #{completionResult}</if>
-            <if test="searchDate != null "> and DATE_FORMAT(e.completion_date, '%Y-%m') = #{searchDate}</if>
+            <if test="searchDate != null "> and DATE_FORMAT(e.create_time, '%Y-%m') = #{searchDate}</if>
         </where>
-            ORDER BY work_duration desc
+            ORDER BY create_time desc
     </select>
 
     <select id="getEmpNameAndId" parameterType="Long" resultMap="EmpPerfResult">
-        select DISTINCT e.employee_name, e.employee_number, e.emp_deptid
+        select DISTINCT e.employee_name, e.employee_number, e.emp_deptid,SUM( e.work_duration ) AS work_duration
         from emp_perf e left join sys_dept d on e.emp_deptid = d.dept_id
-        <where>
+        where 1=1
             <if test="empDeptid != null and empDeptid != 0">
                 AND (e.emp_deptid = #{empDeptid} OR e.emp_deptid IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{empDeptid}, ancestors) ))
             </if>
-        </where>
+        GROUP BY
+        e.employee_number
+        ORDER BY work_duration desc
     </select>
 
     <select id="selectEmpPerfByEmpId" parameterType="Long" resultMap="EmpPerfResult">
@@ -73,11 +75,10 @@
             SUM(e.work_duration) AS work_duration
         FROM
             emp_perf e left join sys_dept d on e.emp_deptid = d.dept_id
-        WHERE
-            MONTH(e.completion_date) = MONTH(CURDATE()) AND YEAR(e.completion_date) = YEAR(CURDATE())
-        <if test="empDeptid != null and empDeptid != 0">
-            AND (e.emp_deptid = #{empDeptid} OR e.emp_deptid IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{empDeptid}, ancestors) ))
-        </if>
+        where 1=1
+            <if test="empDeptid != null and empDeptid != 0">
+                AND (e.emp_deptid = #{empDeptid} OR e.emp_deptid IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{empDeptid}, ancestors) ))
+            </if>
         GROUP BY
             e.employee_number, e.employee_name, e.work_type
     </select>

@@ -55,7 +55,7 @@ public class EmpPerf extends BaseEntity
     private Integer completionRatio;
 
     /** 完成结果 */
-    @Excel(name = "完成结果")
+    @Excel(name = "完成结果", dictType = "completion_result")
     private String completionResult;
 
     /** 完成日期 */

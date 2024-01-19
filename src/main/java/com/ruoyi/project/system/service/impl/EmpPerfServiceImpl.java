@@ -1,7 +1,13 @@
 package com.ruoyi.project.system.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.PageUtils;
 import com.ruoyi.project.system.domain.SysRole;
 import com.ruoyi.project.system.domain.SysUser;
 import com.ruoyi.project.system.service.ISysRoleService;
@@ -39,7 +45,25 @@ public class EmpPerfServiceImpl implements IEmpPerfService
     @Override
     public EmpPerf selectEmpPerfByEmpId(Long empId)
     {
+        canUpdateDel(empId);
         return empPerfMapper.selectEmpPerfByEmpId(empId);
+    }
+
+    private void canUpdateDel(Long empId) {
+        String YG = "emp";
+        String rk = "";
+        Long userid = SecurityUtils.getUserId();
+        SysRole role = sysRoleService.selectRoleByUserId(userid);
+        if(role != null){
+            rk = role.getRoleKey();
+        }
+        if(YG.equals(rk)) {
+            String userName = SecurityUtils.getUsername();
+            EmpPerf emp = empPerfMapper.selectEmpPerfByEmpId(empId);
+            if (emp.getEmployeeNumber() != null && !emp.getEmployeeNumber().equals(userName)) {
+                throw new ServiceException("只能处理自己的数据!");
+            }
+        }
     }
 
     /**
@@ -54,19 +78,26 @@ public class EmpPerfServiceImpl implements IEmpPerfService
         String YG = "emp";
         String SZ = "SZ";
         String rk = "";
-
+        String en = "";
+        if(empPerf.getEmployeeNumber() != null){
+            en = empPerf.getEmployeeNumber();
+        }
         Long userid = SecurityUtils.getUserId();
         SysRole role = sysRoleService.selectRoleByUserId(userid);
         if(role != null){
             rk = role.getRoleKey();
         }
-        if(YG.equals(rk)){
+        if(YG.equals(rk) && en.isEmpty()){
             empPerf.setEmployeeNumber(SecurityUtils.getUsername());
-        }else if(SZ.equals(rk)){
-            SysUser sysuser =  userService.selectUserById(userid);
-            Long deptId = sysuser.getDeptId();
+        }else if(YG.equals(rk) && !en.isEmpty()){
+            empPerf.setEmployeeNumber(en);
+        }
+        else if(SZ.equals(rk)){
+            Long deptId = SecurityUtils.getDeptId();
             empPerf.setEmpDeptid(deptId);
         }
+
+        PageUtils.startPage();
         return empPerfMapper.selectEmpPerfList(empPerf);
     }
 
@@ -79,6 +110,12 @@ public class EmpPerfServiceImpl implements IEmpPerfService
     @Override
     public int insertEmpPerf(EmpPerf empPerf)
     {
+        String finished = "CR001";
+        if(empPerf.getCompletionResult() != null && empPerf.getCompletionResult().equals(finished)){
+            int finish = 100;
+            empPerf.setCompletionRatio(finish);
+        }
+
         String username = SecurityUtils.getUsername();
         Long userId = SecurityUtils.getUserId();
         SysUser sysuser =  userService.selectUserById(userId);
@@ -89,6 +126,7 @@ public class EmpPerfServiceImpl implements IEmpPerfService
         empPerf.setEmpDeptid(deptId);
         empPerf.setCreateBy(username);
         empPerf.setCreateTime(DateUtils.getNowDate());
+
         return empPerfMapper.insertEmpPerf(empPerf);
     }
 
@@ -101,6 +139,11 @@ public class EmpPerfServiceImpl implements IEmpPerfService
     @Override
     public int updateEmpPerf(EmpPerf empPerf)
     {
+        String finished = "CR001";
+        if(empPerf.getCompletionResult() != null && empPerf.getCompletionResult().equals(finished)){
+            int finish = 100;
+            empPerf.setCompletionRatio(finish);
+        }
         empPerf.setUpdateBy(SecurityUtils.getUsername());
         empPerf.setUpdateTime(DateUtils.getNowDate());
         return empPerfMapper.updateEmpPerf(empPerf);
@@ -115,6 +158,9 @@ public class EmpPerfServiceImpl implements IEmpPerfService
     @Override
     public int deleteEmpPerfByEmpIds(Long[] empIds)
     {
+        for (Long empId : empIds) {
+            canUpdateDel(empId);
+        }
         return empPerfMapper.deleteEmpPerfByEmpIds(empIds);
     }
 
@@ -127,6 +173,7 @@ public class EmpPerfServiceImpl implements IEmpPerfService
     @Override
     public int deleteEmpPerfByEmpId(Long empId)
     {
+        canUpdateDel(empId);
         return empPerfMapper.deleteEmpPerfByEmpId(empId);
     }
 

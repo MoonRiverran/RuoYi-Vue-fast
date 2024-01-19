@@ -217,5 +217,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			#{userId}
         </foreach> 
  	</delete>
-	
+
+	<select id="getEmpNameAndId" parameterType="String" resultMap="SysUserResult">
+		select e.nick_name,e.user_name
+		from sys_user e left join sys_dept d on e.dept_id = d.dept_id
+		<where>
+			<if test="dept_id != null and dept_id != 0">
+				AND (e.dept_id = #{dept_id} OR e.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{dept_id}, ancestors) ))
+			</if>
+		</where>
+	</select>
+
 </mapper> 

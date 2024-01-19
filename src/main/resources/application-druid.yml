@@ -6,9 +6,12 @@ spring:
         druid:
             # 主库数据源
             master:
-                url: jdbc:mysql://localhost:3306/crchi_perf_manager?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-                username: root
-                password: DdJd1Ox0AMNDicW98hu+11+SDdnVHxmmN3N54JvkBoE6/He5MmkGm8IdNhBGuY5zQvSg22Vwz/Ac+NgVoMpPjQ==
+                url: jdbc:mysql://10.29.253.89:3306/crchi_perf_manager?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+                username: crchi_remote
+                password: GaphGyDJsLxhq0fgHraYhyNMw1wGJUOJ2TXwNq2eMFloXXV3tXUkFdiFAvZl2X4DxbyF+lfEGagdU/kR3Niunw==
+#                url: jdbc:mysql://localhost:3306/crchi_perf_manager?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+#                username: root
+#                password: DdJd1Ox0AMNDicW98hu+11+SDdnVHxmmN3N54JvkBoE6/He5MmkGm8IdNhBGuY5zQvSg22Vwz/Ac+NgVoMpPjQ==
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭
@@ -39,8 +42,9 @@ spring:
             testWhileIdle: true
             testOnBorrow: false
             testOnReturn: false
-            connectProperties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKboO2syoUbJciuzGjErpMPh0DnoB7JeoSll5zldJHwJHyW9/kW4D0M3nh9YTBKEIo/GeB4MuS961aGWYqU0EhUCAwEAAQ==
-            webStatFilter: 
+            connectProperties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIL4n2GXCoDprUTozih/Vir1Em0gwKf1011u9XdBzz8qTxfrpcxldhLfeT9re5My3ekAUwOPPA9o3/M+0970nkkCAwEAAQ==
+#            connectProperties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKboO2syoUbJciuzGjErpMPh0DnoB7JeoSll5zldJHwJHyW9/kW4D0M3nh9YTBKEIo/GeB4MuS961aGWYqU0EhUCAwEAAQ==
+            webStatFilter:
                 enabled: true
             statViewServlet:
                 enabled: true

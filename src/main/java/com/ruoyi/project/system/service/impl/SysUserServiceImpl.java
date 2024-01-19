@@ -471,6 +471,14 @@ public class SysUserServiceImpl implements ISysUserService
     }
 
     /**
+     *  获取该部门所有员工的名称
+     *
+     * @param deptID 部门ID
+     * @return 结果
+     */
+    public List<SysUser> getEmpNameAndId(String deptID){ return userMapper.getEmpNameAndId(deptID); };
+
+    /**
      * 导入用户数据
      * 
      * @param userList 用户数据列表

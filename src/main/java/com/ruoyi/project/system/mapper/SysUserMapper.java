@@ -126,4 +126,12 @@ public interface SysUserMapper
      * @return 结果
      */
     public SysUser checkEmailUnique(String email);
+
+    /**
+     *  获取该部门所有员工的名称
+     *
+     * @param deptID 部门ID
+     * @return 结果
+     */
+    List<SysUser> getEmpNameAndId(String deptID);
 }

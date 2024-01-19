@@ -1,10 +1,13 @@
 package com.ruoyi.project.system.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.project.system.domain.SysRole;
+import com.ruoyi.project.system.domain.SysUser;
+import com.ruoyi.project.system.service.ISysUserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +39,8 @@ public class EmpPerfController extends BaseController
 {
     @Autowired
     private IEmpPerfService empPerfService;
-
+    @Autowired
+    private ISysUserService userService;
     /**
      * 查询员工绩效列表
      */
@@ -54,33 +58,38 @@ public class EmpPerfController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:perf:list')")
     @GetMapping("/charts")
-    public AjaxResult getMonthWorkHour(String deptID) {
+    public AjaxResult getMonthWorkHour(EmpPerf empPerf) {
         startPage();
-
-        List<EmpPerf> list = empPerfService.getMonthWorkHour(deptID);
+        String deptID = "";
+        if(empPerf.getEmpDeptid() != null){
+            deptID = String.valueOf(empPerf.getEmpDeptid());
+        }else{
+            deptID = String.valueOf(SecurityUtils.getDeptId());
+        }
         List<EmpPerf> nameIds = empPerfService.getEmpNameAndId(deptID);
+        List<EmpPerf> list = empPerfService.getMonthWorkHour(deptID);
 
-        Map<String, Map<String, Object>> employeeInfoMap = new HashMap<>();
+        Map<String, Map<String, Object>> employeeInfoMap = new LinkedHashMap<>();
 
-        for (EmpPerf empPerf : nameIds) {
+        for (EmpPerf emp : nameIds) {
             Map<String, Object> employee = new HashMap<>();
-            employee.put("name", empPerf.getEmployeeName());
-            employee.put("id", empPerf.getEmployeeNumber());
+            employee.put("name", emp.getEmployeeName());
+            employee.put("id", emp.getEmployeeNumber());
 
             List<Map<String, Object>> workerData = new ArrayList<>();
             employee.put("workerData", workerData);
 
-            employeeInfoMap.put(empPerf.getEmployeeNumber(), employee);
+            employeeInfoMap.put(emp.getEmployeeNumber(), employee);
         }
 
-        for (EmpPerf empPerf : list) {
-            String id = empPerf.getEmployeeNumber();
+        for (EmpPerf emp : list) {
+            String id = emp.getEmployeeNumber();
             Map<String, Object> employee = employeeInfoMap.get(id);
             if (employee != null) {
                 List<Map<String, Object>> workerData = (List<Map<String, Object>>) employee.get("workerData");
                 Map<String, Object> project = new HashMap<>();
-                project.put("name", empPerf.getWorkTypeName());
-                project.put("value", empPerf.getWorkDuration());
+                project.put("name", emp.getWorkTypeName());
+                project.put("value", emp.getWorkDuration());
                 workerData.add(project);
             }
         }
@@ -91,7 +100,18 @@ public class EmpPerfController extends BaseController
     }
 
 
-
+    /**
+     * 查询员工绩效列表
+     */
+    @PreAuthorize("@ss.hasPermi('system:perf:list')")
+    @GetMapping("/userList")
+    public AjaxResult userList() {
+        Long userid = SecurityUtils.getUserId();
+        SysUser sysuser =  userService.selectUserById(userid);
+        String deptId = String.valueOf(sysuser.getDeptId());
+        List<SysUser> nameIds = userService.getEmpNameAndId(deptId);
+        return success(nameIds);
+    }
     /**
      * 导出员工绩效列表
      */
