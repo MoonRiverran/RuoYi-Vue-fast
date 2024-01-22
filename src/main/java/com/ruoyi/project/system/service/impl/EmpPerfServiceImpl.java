@@ -10,6 +10,7 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.PageUtils;
 import com.ruoyi.project.system.domain.SysRole;
 import com.ruoyi.project.system.domain.SysUser;
+import com.ruoyi.project.system.mapper.SysDictDataMapper;
 import com.ruoyi.project.system.service.ISysRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,10 @@ public class EmpPerfServiceImpl implements IEmpPerfService
 
     @Autowired
     private ISysRoleService sysRoleService;
+
+    @Autowired
+    private SysDictDataMapper dictDataMapper;
+
     /**
      * 查询员工绩效
      * 
@@ -98,6 +103,18 @@ public class EmpPerfServiceImpl implements IEmpPerfService
         }
 
         PageUtils.startPage();
+        return empPerfMapper.selectEmpPerfList(empPerf);
+    }
+
+    /**
+     * 按类型查询员工绩效列表
+     */
+    public List<EmpPerf> personList(EmpPerf empPerf){
+        if(empPerf.getWorkType() != null && !empPerf.getWorkType().isEmpty()){
+            String workType = empPerf.getWorkType();
+            String workTypeValue =  dictDataMapper.selectDictValue("work_type",workType);
+            empPerf.setWorkType(workTypeValue);
+        }
         return empPerfMapper.selectEmpPerfList(empPerf);
     }
 

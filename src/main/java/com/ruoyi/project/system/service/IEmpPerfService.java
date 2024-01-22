@@ -74,4 +74,9 @@ public interface IEmpPerfService
      * @return 结果
      */
     public List<EmpPerf> getEmpNameAndId(String deptID);
+
+    /**
+     * 按类型查询员工绩效列表
+     */
+    List<EmpPerf> personList(EmpPerf empPerf);
 }

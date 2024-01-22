@@ -54,6 +54,19 @@ public class EmpPerfController extends BaseController
     }
 
     /**
+     * 按类型查询员工绩效列表
+     */
+    @PreAuthorize("@ss.hasPermi('system:perf:list')")
+    @GetMapping("/personList")
+    public TableDataInfo personList(EmpPerf empPerf)
+    {
+        startPage();
+        List<EmpPerf> list = empPerfService.personList(empPerf);
+        return getDataTable(list);
+    }
+
+
+    /**
      * 查询员工绩效列表
      */
     @PreAuthorize("@ss.hasPermi('system:perf:list')")
