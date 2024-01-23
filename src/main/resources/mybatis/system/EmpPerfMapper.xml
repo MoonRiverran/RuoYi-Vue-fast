@@ -46,7 +46,7 @@
             <if test="completionResult != null  and completionResult != ''"> and e.completion_result = #{completionResult}</if>
             <if test="searchDate != null "> and DATE_FORMAT(e.create_time, '%Y-%m') = #{searchDate}</if>
         </where>
-            ORDER BY create_time, work_duration desc
+            ORDER BY DATE(e.create_time), work_duration desc
     </select>
 
 
