@@ -88,6 +88,7 @@ public class EmpPerfServiceImpl implements IEmpPerfService
             en = empPerf.getEmployeeNumber();
         }
         Long userid = SecurityUtils.getUserId();
+        PageUtils.clearPage();
         SysRole role = sysRoleService.selectRoleByUserId(userid);
         if(role != null){
             rk = role.getRoleKey();

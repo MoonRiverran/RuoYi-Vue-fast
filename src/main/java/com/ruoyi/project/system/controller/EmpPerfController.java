@@ -60,7 +60,6 @@ public class EmpPerfController extends BaseController
     @GetMapping("/personList")
     public TableDataInfo personList(EmpPerf empPerf)
     {
-        startPage();
         List<EmpPerf> list = empPerfService.personList(empPerf);
         return getDataTable(list);
     }
