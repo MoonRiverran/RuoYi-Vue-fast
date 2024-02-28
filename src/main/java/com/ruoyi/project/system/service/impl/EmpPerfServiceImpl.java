@@ -1,8 +1,5 @@
 package com.ruoyi.project.system.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import com.ruoyi.common.exception.ServiceException;
@@ -116,6 +113,7 @@ public class EmpPerfServiceImpl implements IEmpPerfService
             String workTypeValue =  dictDataMapper.selectDictValue("work_type",workType);
             empPerf.setWorkType(workTypeValue);
         }
+        empPerf.setEmpDeptid(null);
         return empPerfMapper.selectEmpPerfList(empPerf);
     }
 

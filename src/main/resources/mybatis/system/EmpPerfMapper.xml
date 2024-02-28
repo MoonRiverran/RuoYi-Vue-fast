@@ -17,6 +17,7 @@
         <result property="completionRatio"    column="completion_ratio"    />
         <result property="completionResult"    column="completion_result"    />
         <result property="completionDate"    column="completion_date"    />
+        <result property="fillDate"    column="fill_date"    />
         <result property="workDuration"    column="work_duration"    />
         <result property="extensionField1"    column="extension_field1"    />
         <result property="extensionField2"    column="extension_field2"    />
@@ -29,11 +30,11 @@
     </resultMap>
 
     <sql id="selectEmpPerfVo">
-        select emp_id, employee_name, employee_number, emp_deptid, work_type, project_type, project_description, goal, completion_ratio, completion_result, completion_date, work_duration, extension_field1, extension_field2, extension_field3, create_by, create_time, update_by, update_time, remark from emp_perf
+        select emp_id, employee_name, employee_number, emp_deptid, work_type, project_type, project_description, goal, completion_ratio, completion_result, completion_date, fill_date, work_duration, extension_field1, extension_field2, extension_field3, create_by, create_time, update_by, update_time, remark from emp_perf
     </sql>
 
     <select id="selectEmpPerfList" parameterType="EmpPerf" resultMap="EmpPerfResult">
-        select e.emp_id, e.employee_name, e.employee_number, e.emp_deptid, e.work_type, e.project_type, e.project_description, e.goal, e.completion_ratio, e.completion_result, e.completion_date, e.work_duration, e.extension_field1, e.extension_field2, e.extension_field3, e.create_by, e.create_time, e.update_by, e.update_time, e.remark
+        select e.emp_id, e.employee_name, e.employee_number, e.emp_deptid, e.work_type, e.project_type, e.project_description, e.goal, e.completion_ratio, e.completion_result, e.completion_date, e.fill_date, e.work_duration, e.extension_field1, e.extension_field2, e.extension_field3, e.create_by, e.create_time, e.update_by, e.update_time, e.remark
         from emp_perf e left join sys_dept d on e.emp_deptid = d.dept_id
         <where>
             <if test="employeeName != null  and employeeName != ''"> and e.employee_name like concat('%', #{employeeName}, '%')</if>
@@ -51,14 +52,26 @@
 
 
     <select id="getEmpNameAndId" parameterType="Long" resultMap="EmpPerfResult">
-        select DISTINCT e.employee_name, e.employee_number, e.emp_deptid,SUM( e.work_duration ) AS work_duration
-        from emp_perf e left join sys_dept d on e.emp_deptid = d.dept_id
+        SELECT
+        u.user_name as employee_number,
+        u.nick_name as employee_name,
+        u.dept_id,
+        SUM(e.work_duration) AS work_duration
+        FROM
+        sys_user u
+        LEFT JOIN emp_perf e ON u.user_name = e.employee_number
+        LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
+        <if test="empDeptid != null and empDeptid != 0">
+        LEFT JOIN sys_dept t ON find_in_set(#{empDeptid}, t.ancestors) AND e.emp_deptid = t.dept_id
+        </if>
         where 1=1
-            <if test="empDeptid != null and empDeptid != 0">
-                AND (e.emp_deptid = #{empDeptid} OR e.emp_deptid IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{empDeptid}, ancestors) ))
-            </if>
+        <if test="empDeptid != null and empDeptid != 0">
+            AND (u.dept_id = #{empDeptid} OR t.dept_id IS NOT NULL)
+        </if>
         GROUP BY
         e.employee_number
+        HAVING
+        work_duration IS NOT NULL
         ORDER BY work_duration desc
     </select>
 
@@ -69,19 +82,29 @@
 
     <select id="getMonthWorkHour" parameterType="Long" resultMap="EmpPerfResult">
         SELECT
+            u.user_name as employee_number,
+            u.nick_name as employee_name,
+            e.work_type,
+            SUM( e.work_duration ) AS work_duration,
+            ( SELECT dict_label FROM sys_dict_data WHERE dict_value = e.work_type ) AS work_typeName
+        FROM
+            sys_user u
+                LEFT JOIN emp_perf e ON u.user_name = e.employee_number
+                LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
+        <if test="empDeptid != null and empDeptid != 0">
+        LEFT JOIN sys_dept t ON find_in_set(#{empDeptid}, t.ancestors ) AND e.emp_deptid = t.dept_id
+        </if>
+        WHERE
+            1 = 1
+        <if test="empDeptid != null and empDeptid != 0">
+        AND ( u.dept_id = #{empDeptid} OR t.dept_id IS NOT NULL )
+        </if>
+        GROUP BY
             e.employee_number,
             e.employee_name,
-            e.work_type,
-            (SELECT dict_label FROM sys_dict_data WHERE dict_value = work_type) as work_typeName,
-            SUM(e.work_duration) AS work_duration
-        FROM
-            emp_perf e left join sys_dept d on e.emp_deptid = d.dept_id
-        where 1=1
-            <if test="empDeptid != null and empDeptid != 0">
-                AND (e.emp_deptid = #{empDeptid} OR e.emp_deptid IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{empDeptid}, ancestors) ))
-            </if>
-        GROUP BY
-            e.employee_number, e.employee_name, e.work_type
+            e.work_type
+        HAVING
+            work_duration IS NOT NULL
     </select>
 
     <insert id="insertEmpPerf" parameterType="EmpPerf" useGeneratedKeys="true" keyProperty="empId">
@@ -97,6 +120,7 @@
             <if test="completionRatio != null">completion_ratio,</if>
             <if test="completionResult != null">completion_result,</if>
             <if test="completionDate != null">completion_date,</if>
+            <if test="fillDate != null">fill_date,</if>
             <if test="workDuration != null and workDuration != ''">work_duration,</if>
             <if test="extensionField1 != null">extension_field1,</if>
             <if test="extensionField2 != null">extension_field2,</if>
@@ -118,6 +142,7 @@
             <if test="completionRatio != null">#{completionRatio},</if>
             <if test="completionResult != null">#{completionResult},</if>
             <if test="completionDate != null">#{completionDate},</if>
+            <if test="fillDate != null">#{fillDate},</if>
             <if test="workDuration != null and workDuration != ''">#{workDuration},</if>
             <if test="extensionField1 != null">#{extensionField1},</if>
             <if test="extensionField2 != null">#{extensionField2},</if>
@@ -143,6 +168,7 @@
             <if test="completionRatio != null">completion_ratio = #{completionRatio},</if>
             <if test="completionResult != null">completion_result = #{completionResult},</if>
             <if test="completionDate != null">completion_date = #{completionDate},</if>
+            <if test="fillDate != null">fill_date = #{fillDate},</if>
             <if test="workDuration != null and workDuration != ''">work_duration = #{workDuration},</if>
             <if test="extensionField1 != null">extension_field1 = #{extensionField1},</if>
             <if test="extensionField2 != null">extension_field2 = #{extensionField2},</if>
