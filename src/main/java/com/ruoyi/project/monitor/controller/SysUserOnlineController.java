@@ -1,5 +1,16 @@
 package com.ruoyi.project.monitor.controller;
 
+import com.ruoyi.common.constant.CacheConstants;
+import com.ruoyi.common.utils.CacheUtils;
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.framework.aspectj.lang.annotation.Log;
+import com.ruoyi.framework.aspectj.lang.enums.BusinessType;
+import com.ruoyi.framework.security.LoginUser;
+import com.ruoyi.framework.web.controller.BaseController;
+import com.ruoyi.framework.web.domain.AjaxResult;
+import com.ruoyi.framework.web.page.TableDataInfo;
+import com.ruoyi.project.monitor.domain.SysUserOnline;
+import com.ruoyi.project.system.service.ISysUserOnlineService;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,17 +22,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.ruoyi.common.constant.CacheConstants;
-import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.framework.aspectj.lang.annotation.Log;
-import com.ruoyi.framework.aspectj.lang.enums.BusinessType;
-import com.ruoyi.framework.redis.RedisCache;
-import com.ruoyi.framework.security.LoginUser;
-import com.ruoyi.framework.web.controller.BaseController;
-import com.ruoyi.framework.web.domain.AjaxResult;
-import com.ruoyi.framework.web.page.TableDataInfo;
-import com.ruoyi.project.monitor.domain.SysUserOnline;
-import com.ruoyi.project.system.service.ISysUserOnlineService;
 
 /**
  * 在线用户监控
@@ -35,18 +35,15 @@ public class SysUserOnlineController extends BaseController
     @Autowired
     private ISysUserOnlineService userOnlineService;
 
-    @Autowired
-    private RedisCache redisCache;
-
     @PreAuthorize("@ss.hasPermi('monitor:online:list')")
     @GetMapping("/list")
     public TableDataInfo list(String ipaddr, String userName)
     {
-        Collection<String> keys = redisCache.keys(CacheConstants.LOGIN_TOKEN_KEY + "*");
+        Collection<String> keys = CacheUtils.getkeys(CacheConstants.LOGIN_TOKEN_KEY);
         List<SysUserOnline> userOnlineList = new ArrayList<SysUserOnline>();
         for (String key : keys)
         {
-            LoginUser user = redisCache.getCacheObject(key);
+            LoginUser user = CacheUtils.get(CacheConstants.LOGIN_TOKEN_KEY, key, LoginUser.class);
             if (StringUtils.isNotEmpty(ipaddr) && StringUtils.isNotEmpty(userName))
             {
                 userOnlineList.add(userOnlineService.selectOnlineByInfo(ipaddr, userName, user));
@@ -77,7 +74,7 @@ public class SysUserOnlineController extends BaseController
     @DeleteMapping("/{tokenId}")
     public AjaxResult forceLogout(@PathVariable String tokenId)
     {
-        redisCache.deleteObject(CacheConstants.LOGIN_TOKEN_KEY + tokenId);
+        CacheUtils.removeIfPresent(CacheConstants.LOGIN_TOKEN_KEY, tokenId);
         return success();
     }
 }

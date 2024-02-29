@@ -1,38 +1,33 @@
 package com.ruoyi.framework.security.service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import javax.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.utils.CacheUtils;
 import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.ip.AddressUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.common.utils.uuid.IdUtils;
-import com.ruoyi.framework.redis.RedisCache;
 import com.ruoyi.framework.security.LoginUser;
 import eu.bitwalker.useragentutils.UserAgent;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import javax.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  * token验证处理
- * 
+ *
  * @author ruoyi
  */
 @Component
 public class TokenService
 {
-    private static final Logger log = LoggerFactory.getLogger(TokenService.class);
-
     // 令牌自定义标识
     @Value("${token.header}")
     private String header;
@@ -51,12 +46,9 @@ public class TokenService
 
     private static final Long MILLIS_MINUTE_TEN = 20 * 60 * 1000L;
 
-    @Autowired
-    private RedisCache redisCache;
-
     /**
      * 获取用户身份信息
-     * 
+     *
      * @return 用户信息
      */
     public LoginUser getLoginUser(HttpServletRequest request)
@@ -70,13 +62,11 @@ public class TokenService
                 Claims claims = parseToken(token);
                 // 解析对应的权限以及用户信息
                 String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
-                String userKey = getTokenKey(uuid);
-                LoginUser user = redisCache.getCacheObject(userKey);
+                LoginUser user = CacheUtils.get(CacheConstants.LOGIN_TOKEN_KEY, uuid, LoginUser.class);
                 return user;
             }
             catch (Exception e)
             {
-                log.error("获取用户信息异常'{}'", e.getMessage());
             }
         }
         return null;
@@ -100,14 +90,13 @@ public class TokenService
     {
         if (StringUtils.isNotEmpty(token))
         {
-            String userKey = getTokenKey(token);
-            redisCache.deleteObject(userKey);
+            CacheUtils.removeIfPresent(CacheConstants.LOGIN_TOKEN_KEY, token);
         }
     }
 
     /**
      * 创建令牌
-     * 
+     *
      * @param loginUser 用户信息
      * @return 令牌
      */
@@ -117,7 +106,6 @@ public class TokenService
         loginUser.setToken(token);
         setUserAgent(loginUser);
         refreshToken(loginUser);
-
         Map<String, Object> claims = new HashMap<>();
         claims.put(Constants.LOGIN_USER_KEY, token);
         return createToken(claims);
@@ -125,8 +113,8 @@ public class TokenService
 
     /**
      * 验证令牌有效期，相差不足20分钟，自动刷新缓存
-     * 
-     * @param token 令牌
+     *
+     * @param loginUser
      * @return 令牌
      */
     public void verifyToken(LoginUser loginUser)
@@ -141,7 +129,7 @@ public class TokenService
 
     /**
      * 刷新令牌有效期
-     * 
+     *
      * @param loginUser 登录信息
      */
     public void refreshToken(LoginUser loginUser)
@@ -149,13 +137,12 @@ public class TokenService
         loginUser.setLoginTime(System.currentTimeMillis());
         loginUser.setExpireTime(loginUser.getLoginTime() + expireTime * MILLIS_MINUTE);
         // 根据uuid将loginUser缓存
-        String userKey = getTokenKey(loginUser.getToken());
-        redisCache.setCacheObject(userKey, loginUser, expireTime, TimeUnit.MINUTES);
+        CacheUtils.put(CacheConstants.LOGIN_TOKEN_KEY, loginUser.getToken(), loginUser, expireTime, TimeUnit.MINUTES);
     }
-    
+
     /**
      * 设置用户代理信息
-     * 
+     *
      * @param loginUser 登录信息
      */
     public void setUserAgent(LoginUser loginUser)
@@ -167,7 +154,7 @@ public class TokenService
         loginUser.setBrowser(userAgent.getBrowser().getName());
         loginUser.setOs(userAgent.getOperatingSystem().getName());
     }
-    
+
     /**
      * 从数据声明生成令牌
      *
@@ -222,10 +209,5 @@ public class TokenService
             token = token.replace(Constants.TOKEN_PREFIX, "");
         }
         return token;
-    }
-
-    private String getTokenKey(String uuid)
-    {
-        return CacheConstants.LOGIN_TOKEN_KEY + uuid;
     }
 }

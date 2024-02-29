@@ -69,7 +69,7 @@
             AND (u.dept_id = #{empDeptid} OR t.dept_id IS NOT NULL)
         </if>
         GROUP BY
-        e.employee_number
+        u.user_name,u.nick_name,u.dept_id,e.work_duration
         HAVING
         work_duration IS NOT NULL
         ORDER BY work_duration desc
@@ -100,11 +100,11 @@
         AND ( u.dept_id = #{empDeptid} OR t.dept_id IS NOT NULL )
         </if>
         GROUP BY
-            e.employee_number,
-            e.employee_name,
-            e.work_type
+        u.user_name,
+        u.nick_name,
+        e.work_type
         HAVING
-            work_duration IS NOT NULL
+        SUM( e.work_duration ) IS NOT NULL;
     </select>
 
     <insert id="insertEmpPerf" parameterType="EmpPerf" useGeneratedKeys="true" keyProperty="empId">

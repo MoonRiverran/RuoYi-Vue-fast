@@ -3,9 +3,7 @@ package com.ruoyi.project.system.controller;
 import java.util.*;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.project.system.domain.SysRole;
 import com.ruoyi.project.system.domain.SysUser;
 import com.ruoyi.project.system.service.ISysUserService;
 import org.springframework.security.access.prepost.PreAuthorize;
