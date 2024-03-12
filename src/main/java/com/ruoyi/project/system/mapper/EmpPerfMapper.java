@@ -62,17 +62,17 @@ public interface EmpPerfMapper
     /**
      *  获取该部门所有员工的月工作时间
      *
-     * @param deptID 员工绩效主键
+     * @param empPerf 员工绩效
      * @return 结果
      */
-    public List<EmpPerf> getMonthWorkHour(String deptID);
+    public List<EmpPerf> getMonthWorkHour(EmpPerf empPerf);
 
     /**
      *  获取该部门所有员工的id和名称
      *
-     * @param deptID 部门ID
+     * @param empPerf 员工绩效
      * @return 结果
      */
-    public List<EmpPerf> getEmpNameAndId(String deptID);
+    public List<EmpPerf> getEmpNameAndId(EmpPerf empPerf);
 
 }

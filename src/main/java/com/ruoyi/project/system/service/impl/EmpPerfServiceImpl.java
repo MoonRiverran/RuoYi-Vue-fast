@@ -95,7 +95,7 @@ public class EmpPerfServiceImpl implements IEmpPerfService
         }else if(YG.equals(rk) && !en.isEmpty()){
             empPerf.setEmployeeNumber(en);
         }
-        else if(SZ.equals(rk)){
+        else if(SZ.equals(rk)&& empPerf.getEmpDeptid()== null){
             Long deptId = SecurityUtils.getDeptId();
             empPerf.setEmpDeptid(deptId);
         }
@@ -196,18 +196,18 @@ public class EmpPerfServiceImpl implements IEmpPerfService
     /**
      *  获取该部门所有员工的月工作时间
      *
-     * @param deptID 部门ID
+     * @param empPerf 员工绩效
      * @return 结果
      */
     @Override
-    public List<EmpPerf> getMonthWorkHour(String deptID) { return empPerfMapper.getMonthWorkHour(deptID); }
+    public List<EmpPerf> getMonthWorkHour(EmpPerf empPerf) { return empPerfMapper.getMonthWorkHour(empPerf); }
 
     /**
      *  获取该部门所有员工的月工作时间
      *
-     * @param deptID 部门ID
+     * @param empPerf 员工绩效
      * @return 结果
      */
     @Override
-    public List<EmpPerf> getEmpNameAndId(String deptID) { return empPerfMapper.getEmpNameAndId(deptID); }
+    public List<EmpPerf> getEmpNameAndId(EmpPerf empPerf) { return empPerfMapper.getEmpNameAndId(empPerf); }
 }

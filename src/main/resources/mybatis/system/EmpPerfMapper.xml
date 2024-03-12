@@ -36,16 +36,19 @@
     <select id="selectEmpPerfList" parameterType="EmpPerf" resultMap="EmpPerfResult">
         select e.emp_id, e.employee_name, e.employee_number, e.emp_deptid, e.work_type, e.project_type, e.project_description, e.goal, e.completion_ratio, e.completion_result, e.completion_date, e.fill_date, e.work_duration, e.extension_field1, e.extension_field2, e.extension_field3, e.create_by, e.create_time, e.update_by, e.update_time, e.remark
         from emp_perf e left join sys_dept d on e.emp_deptid = d.dept_id
+        <if test="empDeptid != null and empDeptid != 0">
+            LEFT JOIN sys_dept t ON find_in_set(#{empDeptid}, t.ancestors) AND e.emp_deptid = t.dept_id
+        </if>
         <where>
             <if test="employeeName != null  and employeeName != ''"> and e.employee_name like concat('%', #{employeeName}, '%')</if>
             <if test="employeeNumber != null  and employeeNumber != ''"> and e.employee_Number = #{employeeNumber}</if>
             <if test="empDeptid != null and empDeptid != 0">
-                AND (e.emp_deptid = #{empDeptid} OR e.emp_deptid IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{empDeptid}, ancestors) ))
+                AND (e.emp_deptid = #{empDeptid} OR  t.dept_id IS NOT NULL)
             </if>
             <if test="workType != null  and workType != ''"> and e.work_type = #{workType}</if>
             <if test="projectType != null  and projectType != ''"> and e.project_type = #{projectType}</if>
             <if test="completionResult != null  and completionResult != ''"> and e.completion_result = #{completionResult}</if>
-            <if test="searchDate != null "> and DATE_FORMAT(e.create_time, '%Y-%m') = #{searchDate}</if>
+            <if test="searchDate != null "> and DATE_FORMAT(e.fill_date, '%Y-%m') = #{searchDate}</if>
         </where>
             ORDER BY DATE(e.create_time)desc, work_duration desc
     </select>
@@ -55,7 +58,6 @@
         SELECT
         u.user_name as employee_number,
         u.nick_name as employee_name,
-        u.dept_id,
         SUM(e.work_duration) AS work_duration
         FROM
         sys_user u
@@ -68,8 +70,20 @@
         <if test="empDeptid != null and empDeptid != 0">
             AND (u.dept_id = #{empDeptid} OR t.dept_id IS NOT NULL)
         </if>
+        <if test="workType != null  and workType != ''">
+            AND work_type = #{workType}
+        </if>
+        <if test="projectType != null  and projectType != ''">
+            AND project_type = #{projectType}
+        </if>
+        <if test="searchDate != null  and searchDate != ''">
+            AND DATE_FORMAT(e.fill_date,'%Y-%m') = #{searchDate}
+        </if>
+        <if test="employeeNumber != null  and employeeNumber != ''">
+            AND employee_number = #{employeeNumber}
+        </if>
         GROUP BY
-        u.user_name,u.nick_name,u.dept_id,e.work_duration
+        u.user_name,u.nick_name,u.dept_id
         HAVING
         work_duration IS NOT NULL
         ORDER BY work_duration desc
@@ -82,22 +96,34 @@
 
     <select id="getMonthWorkHour" parameterType="Long" resultMap="EmpPerfResult">
         SELECT
-            u.user_name as employee_number,
-            u.nick_name as employee_name,
-            e.work_type,
-            SUM( e.work_duration ) AS work_duration,
-            ( SELECT dict_label FROM sys_dict_data WHERE dict_value = e.work_type ) AS work_typeName
+        u.user_name as employee_number,
+        u.nick_name as employee_name,
+        e.work_type,
+        SUM( e.work_duration ) AS work_duration,
+        ( SELECT dict_label FROM sys_dict_data WHERE dict_value = e.work_type ) AS work_typeName
         FROM
-            sys_user u
-                LEFT JOIN emp_perf e ON u.user_name = e.employee_number
-                LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
+        sys_user u
+        LEFT JOIN emp_perf e ON u.user_name = e.employee_number
+        LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
         <if test="empDeptid != null and empDeptid != 0">
-        LEFT JOIN sys_dept t ON find_in_set(#{empDeptid}, t.ancestors ) AND e.emp_deptid = t.dept_id
+            LEFT JOIN sys_dept t ON find_in_set(#{empDeptid}, t.ancestors ) AND e.emp_deptid = t.dept_id
         </if>
         WHERE
-            1 = 1
+        1 = 1
         <if test="empDeptid != null and empDeptid != 0">
-        AND ( u.dept_id = #{empDeptid} OR t.dept_id IS NOT NULL )
+            AND ( u.dept_id = #{empDeptid} OR t.dept_id IS NOT NULL )
+        </if>
+        <if test="workType != null  and workType != ''">
+            AND work_type = #{workType}
+        </if>
+        <if test="projectType != null  and projectType != ''">
+            AND project_type = #{projectType}
+        </if>
+        <if test="searchDate != null  and searchDate != ''">
+            AND DATE_FORMAT(e.fill_date,'%Y-%m') = #{searchDate}
+        </if>
+        <if test="employeeNumber != null  and employeeNumber != ''">
+            AND employee_number = #{employeeNumber}
         </if>
         GROUP BY
         u.user_name,

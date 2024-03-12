@@ -1,29 +1,32 @@
 package com.ruoyi.project.system.controller;
 
-import java.util.*;
-import javax.servlet.http.HttpServletResponse;
-
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.framework.aspectj.lang.annotation.Log;
+import com.ruoyi.framework.aspectj.lang.enums.BusinessType;
+import com.ruoyi.framework.web.controller.BaseController;
+import com.ruoyi.framework.web.domain.AjaxResult;
+import com.ruoyi.framework.web.page.TableDataInfo;
+import com.ruoyi.project.system.domain.EmpPerf;
 import com.ruoyi.project.system.domain.SysUser;
+import com.ruoyi.project.system.service.IEmpPerfService;
 import com.ruoyi.project.system.service.ISysUserService;
-import org.springframework.security.access.prepost.PreAuthorize;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.ruoyi.framework.aspectj.lang.annotation.Log;
-import com.ruoyi.framework.aspectj.lang.enums.BusinessType;
-import com.ruoyi.project.system.domain.EmpPerf;
-import com.ruoyi.project.system.service.IEmpPerfService;
-import com.ruoyi.framework.web.controller.BaseController;
-import com.ruoyi.framework.web.domain.AjaxResult;
-import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.framework.web.page.TableDataInfo;
 
 /**
  * 员工绩效Controller
@@ -70,14 +73,11 @@ public class EmpPerfController extends BaseController
     @GetMapping("/charts")
     public AjaxResult getMonthWorkHour(EmpPerf empPerf) {
         startPage();
-        String deptID = "";
-        if(empPerf.getEmpDeptid() != null){
-            deptID = String.valueOf(empPerf.getEmpDeptid());
-        }else{
-            deptID = String.valueOf(SecurityUtils.getDeptId());
+        if(empPerf.getEmpDeptid() == null){
+            empPerf.setEmpDeptid(SecurityUtils.getDeptId());
         }
-        List<EmpPerf> nameIds = empPerfService.getEmpNameAndId(deptID);
-        List<EmpPerf> list = empPerfService.getMonthWorkHour(deptID);
+        List<EmpPerf> nameIds = empPerfService.getEmpNameAndId(empPerf);
+        List<EmpPerf> list = empPerfService.getMonthWorkHour(empPerf);
 
         Map<String, Map<String, Object>> employeeInfoMap = new LinkedHashMap<>();
 
