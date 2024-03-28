@@ -116,9 +116,7 @@ public class EmpPerfController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:perf:list')")
     @GetMapping("/userList")
     public AjaxResult userList() {
-        Long userid = SecurityUtils.getUserId();
-        SysUser sysuser =  userService.selectUserById(userid);
-        String deptId = String.valueOf(sysuser.getDeptId());
+        String deptId = SecurityUtils.getDeptId().toString();
         List<SysUser> nameIds = userService.getEmpNameAndId(deptId);
         return success(nameIds);
     }
