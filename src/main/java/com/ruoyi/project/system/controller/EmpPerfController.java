@@ -128,7 +128,7 @@ public class EmpPerfController extends BaseController
     @PostMapping("/export")
     public void export(HttpServletResponse response, EmpPerf empPerf)
     {
-        List<EmpPerf> list = empPerfService.selectEmpPerfList(empPerf);
+        List<EmpPerf> list = empPerfService.exportEmpPerfList(empPerf);
         ExcelUtil<EmpPerf> util = new ExcelUtil<EmpPerf>(EmpPerf.class);
         util.exportExcel(response, list, "员工绩效数据");
     }

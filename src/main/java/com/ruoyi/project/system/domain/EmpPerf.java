@@ -30,7 +30,6 @@ public class EmpPerf extends BaseEntity
     private String employeeNumber;
 
     /** 员工部门ID */
-    @Excel(name = "员工部门ID")
     private Long empDeptid;
 
     /** 工作类型（数据字典） */
@@ -60,28 +59,29 @@ public class EmpPerf extends BaseEntity
 
     /** 完成日期 */
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "完成日期", width = 30, dateFormat = "yyyy-MM-dd")
     private Date completionDate;
-    /** 完成日期 */
+
+    /** 扩展字段1 */
+    @Excel(name = "开始日期", width = 30, dateFormat = "yyyy-MM-dd")
+    private String extensionField1;
+
+    /** 填报月份 */
     @JsonFormat(pattern = "yyyy-MM")
     @Excel(name = "填报月份", width = 30, dateFormat = "yyyy-MM")
     private Date fillDate;
     private String searchDate;
+    private String searchDateBegin;
+    private String searchDateEnd;
 
     /** 工作时长（h） */
     @Excel(name = "工作时长", suffix="h")
     private Integer  workDuration;
 
-    /** 扩展字段1 */
-    @Excel(name = "扩展字段1")
-    private String extensionField1;
 
     /** 扩展字段2 */
-    @Excel(name = "扩展字段2")
     private String extensionField2;
 
     /** 扩展字段3 */
-    @Excel(name = "扩展字段3")
     private String extensionField3;
 
     public EmpPerf() {
@@ -247,6 +247,22 @@ public class EmpPerf extends BaseEntity
         this.fillDate = fillDate;
     }
 
+    public String getSearchDateBegin() {
+        return searchDateBegin;
+    }
+
+    public void setSearchDateBegin(String searchDateBegin) {
+        this.searchDateBegin = searchDateBegin;
+    }
+
+    public String getSearchDateEnd() {
+        return searchDateEnd;
+    }
+
+    public void setSearchDateEnd(String searchDateEnd) {
+        this.searchDateEnd = searchDateEnd;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -273,6 +289,8 @@ public class EmpPerf extends BaseEntity
                 .append("updateTime", getUpdateTime())
                 .append("remark", getRemark())
                 .append("searchDate", getSearchDate())
+                .append("searchDateBegin", getSearchDateBegin())
+                .append("searchDateEnd", getSearchDateEnd())
                 .toString();
     }
 }

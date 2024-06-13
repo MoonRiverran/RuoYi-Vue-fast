@@ -20,8 +20,16 @@ public interface EmpPerfMapper
     public EmpPerf selectEmpPerfByEmpId(Long empId);
 
     /**
-     * 查询员工绩效列表
+     * 导出员工绩效列表
      * 
+     * @param empPerf 员工绩效
+     * @return 员工绩效集合
+     */
+    public List<EmpPerf> exportEmpPerfList(EmpPerf empPerf);
+
+    /**
+     * 查询员工绩效列表
+     *
      * @param empPerf 员工绩效
      * @return 员工绩效集合
      */

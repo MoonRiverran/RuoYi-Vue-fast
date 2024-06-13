@@ -49,10 +49,42 @@
             <if test="projectType != null  and projectType != ''"> and e.project_type = #{projectType}</if>
             <if test="completionResult != null  and completionResult != ''"> and e.completion_result = #{completionResult}</if>
             <if test="searchDate != null "> and DATE_FORMAT(e.fill_date, '%Y-%m') = #{searchDate}</if>
+            <if test="searchDateBegin != null">
+                AND DATE_FORMAT(e.extension_field1, '%Y-%m-%d') &gt;= #{searchDateBegin}
+            </if>
+            <if test="searchDateEnd != null">
+                AND DATE_FORMAT(e.extension_field1, '%Y-%m-%d') &lt;= #{searchDateEnd}
+            </if>
         </where>
             ORDER BY DATE(e.create_time)desc, work_duration desc
     </select>
 
+    <select id="exportEmpPerfList" parameterType="EmpPerf" resultMap="EmpPerfResult">
+        select e.emp_id, e.employee_name, e.employee_number, e.emp_deptid, e.work_type, e.project_type, e.project_description, e.goal, e.completion_ratio, e.completion_result, e.completion_date, e.fill_date, e.work_duration, e.extension_field1, e.extension_field2, e.extension_field3, e.create_by, e.create_time, e.update_by, e.update_time, e.remark
+        from emp_perf e left join sys_dept d on e.emp_deptid = d.dept_id
+        <if test="empDeptid != null and empDeptid != 0">
+            LEFT JOIN sys_dept t ON find_in_set(#{empDeptid}, t.ancestors) AND e.emp_deptid = t.dept_id
+        </if>
+        <where>
+            <if test="employeeName != null  and employeeName != ''"> and e.employee_name like concat('%', #{employeeName}, '%')</if>
+            <if test="employeeNumber != null  and employeeNumber != ''"> and e.employee_Number = #{employeeNumber}</if>
+            <if test="empDeptid != null and empDeptid != 0">
+                AND (e.emp_deptid = #{empDeptid} OR  t.dept_id IS NOT NULL)
+            </if>
+            <if test="workType != null  and workType != ''"> and e.work_type = #{workType}</if>
+            <if test="projectType != null  and projectType != ''"> and e.project_type = #{projectType}</if>
+            <if test="completionResult != null  and completionResult != ''"> and e.completion_result = #{completionResult}</if>
+            <if test="searchDate != null "> and DATE_FORMAT(e.fill_date, '%Y-%m') = #{searchDate}</if>
+            <if test="searchDateBegin != null">
+                AND DATE_FORMAT(e.extension_field1, '%Y-%m-%d') &gt;= #{searchDateBegin}
+            </if>
+            <if test="searchDateEnd != null">
+                AND DATE_FORMAT(e.extension_field1, '%Y-%m-%d') &lt;= #{searchDateEnd}
+            </if>
+        </where>
+
+        ORDER BY e.employee_number, DATE(e.extension_field1)desc, work_duration desc
+    </select>
 
     <select id="getEmpNameAndId" parameterType="Long" resultMap="EmpPerfResult">
         SELECT

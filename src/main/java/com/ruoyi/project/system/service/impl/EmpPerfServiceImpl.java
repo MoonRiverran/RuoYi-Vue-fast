@@ -105,6 +105,20 @@ public class EmpPerfServiceImpl implements IEmpPerfService
     }
 
     /**
+     * 导出员工绩效列表
+     *
+     * @param empPerf 员工绩效
+     * @return 员工绩效
+     */
+    @Override
+    public List<EmpPerf> exportEmpPerfList(EmpPerf empPerf)
+    {
+        return empPerfMapper.exportEmpPerfList(empPerf);
+    }
+
+
+
+    /**
      * 按类型查询员工绩效列表
      */
     public List<EmpPerf> personList(EmpPerf empPerf){

@@ -28,6 +28,14 @@ public interface IEmpPerfService
     public List<EmpPerf> selectEmpPerfList(EmpPerf empPerf);
 
     /**
+     * 导出员工绩效列表
+     *
+     * @param empPerf 员工绩效
+     * @return 员工绩效集合
+     */
+    public List<EmpPerf> exportEmpPerfList(EmpPerf empPerf);
+
+    /**
      * 新增员工绩效
      * 
      * @param empPerf 员工绩效
